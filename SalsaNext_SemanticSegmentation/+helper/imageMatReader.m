@@ -13,6 +13,7 @@ data = d.(f{1});
 index = isnan(data);
 data(index) = 0;
 
+% Normalize data to [0,1] range channel wise
 data(:,:,1) = rescale(data(:,:,1), 0, 1, "InputMin", 0, "InputMax", 1500);
 data(:,:,2) = rescale(data(:,:,2), 0, 1, "InputMin", -40, "InputMax", 40);
 data(:,:,3) = rescale(data(:,:,3), 0, 1, "InputMin", -40, "InputMax", 40);
