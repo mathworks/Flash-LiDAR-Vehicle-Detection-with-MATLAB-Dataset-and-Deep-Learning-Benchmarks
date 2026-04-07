@@ -47,7 +47,7 @@ trainPC = trainCell{1};
 trainMask = single(trainCell{2});
 
 % Format mask to display as unique colors
-cmap = helper.lidarColorMap();
+cmap = jet(numClasses);
 trainMask(isnan(trainMask)) = 0;
 trainMask = trainMask + 1;
 colormap_GroundTruth = cmap(trainMask,:);
@@ -109,7 +109,7 @@ testMask = single(testCell{2});
 testPred = single(segmentObjects(trainedNet,testPC));
 
 % Format masks to display as unique colors
-cmap = helper.lidarColorMap();
+cmap = jet(numClasses);
 testMask(isnan(testMask)) = 0;
 testMask = testMask + 1;
 colormap_GroundTruth = cmap(testMask,:);
@@ -147,7 +147,7 @@ metrics.ClassMetrics
 %% Visualize results of test data
 figure('Position', [50 50 1800 900])
 reset(cdsTest)
-cmap = helper.lidarColorMap();
+cmap = jet(numClasses);
 while hasdata(cdsTest)
     testCell = read(cdsTest);
     testPC = testCell{1};
