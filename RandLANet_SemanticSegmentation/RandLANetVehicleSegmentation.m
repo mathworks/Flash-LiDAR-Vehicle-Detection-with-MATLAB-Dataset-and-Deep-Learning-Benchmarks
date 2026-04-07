@@ -44,16 +44,10 @@ cdsTest = subset(cds,shuffledIndices(numTrain+numVal+1:end));
 %% Display sample point cloud and ground truth masks
 trainCell = read(cdsTrain);
 trainPC = trainCell{1};
-trainMask = single(trainCell{2});
+trainMask = trainCell{2};
 
 % Format mask to display as unique colors
-cmap = jet(numClasses);
-trainMask(isnan(trainMask)) = 0;
-trainMask = trainMask + 1;
-colormap_GroundTruth = cmap(trainMask,:);
-ptCloud_GroundTruth = pointCloud(reshape(trainPC.Location,[],3),"Color",colormap_GroundTruth);
-pcshow(ptCloud_GroundTruth);
-view(-90,0)
+helper.displayLidarOverlayPointCloud(trainPC, trainMask, classNames)
 % reset(cdsTrain) %To restart from first image
 
 %% Use the randlanet function to create a RandLANet segmentation network.
@@ -95,7 +89,7 @@ doTraining = false;
 
 if doTraining
     trainedNet = trainRandlanet(cdsTrain,net,options);
-    modelName = "RandLANet_Trained_" +string(datetime)+ ".mat";
+    modelName = "RandLANet_Trained_" + datetime('now', Format='yyyy_MM_dd_HH_mm') + ".mat";
     save(modelName, "trainedNet");
 else
     load("RandLANet_Trained.mat");
@@ -105,30 +99,17 @@ end
 % Run model on a single test image
 testCell = read(cdsTest);
 testPC = testCell{1};
-testMask = single(testCell{2});
-testPred = single(segmentObjects(trainedNet,testPC));
-
-% Format masks to display as unique colors
-cmap = jet(numClasses);
-testMask(isnan(testMask)) = 0;
-testMask = testMask + 1;
-colormap_GroundTruth = cmap(testMask,:);
-ptCloud_GroundTruth = pointCloud(reshape(testPC.Location,[],3),"Color",colormap_GroundTruth);
-testPred(isnan(testPred)) = 0;
-testPred = testPred + 1;
-colormap_Predicted = cmap(testPred,:);
-ptCloud_Predicted = pointCloud(reshape(testPC.Location,[],3),"Color",colormap_Predicted);
+testMask = testCell{2};
+testPred = segmentObjects(trainedNet,testPC);
 
 tiledlayout(1, 2);
 % Display Ground Truth
 nexttile
-pcshow(ptCloud_GroundTruth);
-view(-90,0)
+helper.displayLidarOverlayPointCloud(testPC, testMask, classNames)
 title('Semantic Segmentation Ground Truth');
 % Display Predicted Output
 nexttile
-pcshow(ptCloud_Predicted);
-view(-90,0)
+helper.displayLidarOverlayPointCloud(testPC, testPred, classNames)
 title('Semantic Segmentation Prediction');
 % reset(cdsTest); %To restart from first image
 
@@ -147,33 +128,21 @@ metrics.ClassMetrics
 %% Visualize results of test data
 figure('Position', [50 50 1800 900])
 reset(cdsTest)
-cmap = jet(numClasses);
+
 while hasdata(cdsTest)
     testCell = read(cdsTest);
     testPC = testCell{1};
-    testMask = single(testCell{2});
-    testPred = single(segmentObjects(trainedNet,testPC));
-
-    % Format masks to display as unique colors
-    testMask(isnan(testMask)) = 0;
-    testMask = testMask + 1;
-    colormap_GroundTruth = cmap(testMask,:);
-    ptCloud_GroundTruth = pointCloud(reshape(testPC.Location,[],3),"Color",colormap_GroundTruth);
-    testPred(isnan(testPred)) = 0;
-    testPred = testPred + 1;
-    colormap_Predicted = cmap(testPred,:);
-    ptCloud_Predicted = pointCloud(reshape(testPC.Location,[],3),"Color",colormap_Predicted);
+    testMask = testCell{2};
+    testPred = segmentObjects(trainedNet,testPC);
 
     tiledlayout(1, 2);
     % Display Ground Truth
     nexttile
-    pcshow(ptCloud_GroundTruth);
-    view(-90,0)
+    helper.displayLidarOverlayPointCloud(testPC, testMask, classNames)
     title('Semantic Segmentation Ground Truth');
     % Display Predicted Output
     nexttile
-    pcshow(ptCloud_Predicted);
-    view(-90,0)
+    helper.displayLidarOverlayPointCloud(testPC, testPred, classNames)
     title('Semantic Segmentation Prediction');
    
     drawnow; % Update the figure
