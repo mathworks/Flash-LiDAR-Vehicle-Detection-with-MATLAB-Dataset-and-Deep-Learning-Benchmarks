@@ -11,7 +11,7 @@ if ~isempty(ROI)
     % Calculate the "mode" of the range of the points within the bounding
     % box, which is an estimate of the distance of the detected vehicle
     % and eliminate all points that are too far or too close compared to the 
-    % estimated distance (Range +/- threshold 
+    % estimated distance (Range +/- threshold)
     rangeWindow = fix(Image(inROI & Image~=0)/1000)*1000;
     midRange = mode(rangeWindow, "all"); 
     inRange = (Image > midRange-RangeBuffer) & (Image < midRange+RangeBuffer);
