@@ -110,7 +110,7 @@ doTraining = false;
 if doTraining        
     % Train the YOLO-X detector.
     [YOLODetector,info] = trainYOLOXObjectDetector(trainingData,YOLODetector,options);
-    modelName = "YOLOXDetector_Trained_" +string(datetime)+ ".mat";
+    modelName = "YOLOXDetector_Trained_" + datetime('now', Format='yyyy_MM_dd_HH_mm') + ".mat";
     save(modelName, 'YOLODetector');
 else
     % Load pretrained detector for the example.
