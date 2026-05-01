@@ -124,7 +124,7 @@ metrics.ClassMetrics
 figure('Position', [50 50 1800 900])
 reset(cdsTest)
 
-while hasdata(imdsTest)
+while hasdata(cdsTest)
     testCell = read(cdsTest);
     testImg = testCell{1};
     testLabels = testCell{2};
@@ -149,7 +149,7 @@ reset(cdsTest)
 imdsTest = cdsTest.UnderlyingDatastores{1};
 
 count = 0;
-while hasdata(imdsTest)
+while hasdata(cdsTest)
     count = count + 1;
     testCell = read(cdsTest);
     testImg = testCell{1};
